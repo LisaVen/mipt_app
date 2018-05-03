@@ -36,128 +36,175 @@ void Mob::Move() {//функция перемещения по вектору
 
 // Далее идут столкновения, нашла алгоритм на Java, он практически полностью прописан, но нужно его переделать под с++, да и разобраться в нем как следует.
 
-public class Collision2D
+//.h file code:
+
+#include <string>
+#include <vector>
+#include <cmath>
+
+//Forward class declarations:
+class CheckResult;
+
+class Collision2D
 {
-  private Vector2 mtv;
-  private float mtvLength;
-  private bool collide;
+private:
+Vector2 *mtv;
+float mtvLength = 0;
+bool_Renamed *collide;
 
-  public Collision2D(std::array <Vector2> first, std:: array <Vector2> second)
-  {
-    CheckResult result = check(first, second);
+public:
+virtual ~Collision2D()
+{
+	delete mtv;
+	delete collide;
+}
 
-    if (result == null)
-    {
-      collide = false;
-      return;
-    }
+Collision2D(std::array_Renamed<Vector2*> &first, std:: array_Renamed);
 
-    collide = true;
-    mtv = result.mtv;
-    mtvLength = abs(result.mtvLength);
-  }
+private:
+static CheckResult *check(std::array_Renamed<Vector2*> &firstVertices, std::array_Renamed<Vector2*> &secondVertices);
 
-  private static CheckResult check(std::array <Vector2> firstVertices, std::array <Vector2> secondVertices)
-  {
-    Vector2 mtv = null;
-    Vector2 normal = Vector2.getInstance();
-    float minMTVLength = 0;
-    int count = firstVertices.size() + secondVertices.size();
+static float getIntersectionLength(Vector2 *firstProjection, Vector2 *secondProjection);
 
-    for (int i = 0; i < count; i ++)
-    {
-      setNormal(normal, firstVertices, secondVertices, i);
+static void setNormal(Vector2 *normal, std::array_Renamed<Vector2*> &firstVertices, std::array_Renamed<Vector2*> &secondVertices, int num);
 
-      Vector2 firstProjection = normal.getProjection(firstVertices);
-      Vector2 secondProjection = normal.getProjection(secondVertices);
+static void setNormal(Vector2 *normal, std::vector<Vector2*> &vertices, int num);
 
-      if (firstProjection.getX() < secondProjection.getY() || secondProjection.getX() < firstProjection.getY())
-        return null;
+public:
+virtual Vector2 *getMTV();
 
-      if (mtv == null)
-      {
-        mtv = Vector2.getInstance(normal);
-        minMTVLength = getIntersectionLength(firstProjection, secondProjection);
-      }
-      else
-      {
-        float mtvLength = getIntersectionLength(firstProjection, secondProjection);
-        if (Math.abs(mtvLength) < Math.abs(minMTVLength))
-        {
-          mtv.setFrom(normal);
-          minMTVLength = mtvLength;
-        }
-      }
-    }
+virtual float getMTVLength();
 
-    return new CheckResult(mtv, minMTVLength);
-  }
+virtual bool_Renamed *isCollide();
 
-  private static float getIntersectionLength(Vector2 firstProjection, Vector2 secondProjection)
-  {
-    return (secondProjection.getY() - firstProjection.getX() > 0)
-      ? secondProjection.getY() - firstProjection.getX()
-      : firstProjection.getY() - secondProjection.getX();
-  }
+	std::wstring toString() override;
 
-  private static void setNormal(Vector2 normal, std::array <Vector2> firstVertices, std::array <Vector2> secondVertices, int num)
-  {
-    if (num < firstVertices.size())
-      setNormal(normal, firstVertices, num);
-    else
-    {
-      num -= firstVertices.size();
-      setNormal(normal, secondVertices, num);
-    }
-  }
+private:
+class CheckResult
+{
+private:
+	Vector2 *const mtv;
+	const float mtvLength;
 
-  private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
-  {
-    Vector2 firstPoint = vertices.get(num);
-    Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
+public:
+	virtual ~CheckResult()
+	{
+		delete mtv;
+	}
 
-    Vector2 edge = secondPoint.getSubtract(firstPoint);
+	CheckResult(Vector2 *mtv, float mtvLength);
+};
+};
 
-    normal.setX(-edge.getY());
-    normal.setY(edge.getX());
+//.cpp file:
 
-    normal.normalize();
-  }
+Collision2D::Collision2D(std::array_Renamed<Vector2*> &first, std:: array_Renamed)
+{
+		CheckResult *result = check(first, second);
 
-  public Vector2 getMTV()
-  {
-    return Vector2.getInstance(mtv);
-  }
+		if (result == nullptr)
+		{
+			collide = false;
+			return;
+		}
 
-  public float getMTVLength()
-  {
-    return mtvLength;
-  }
+		collide = true;
+		mtv = result->mtv;
+		mtvLength = abs(result->mtvLength);
+}
 
-  public bool isCollide()
-  {
-    return collide;
-  }
+Collision2D::CheckResult *Collision2D::check(std::array_Renamed<Vector2*> &firstVertices, std::array_Renamed<Vector2*> &secondVertices)
+{
+		Vector2 *mtv = nullptr;
+		Vector2 *normal = Vector2::getInstance();
+		float minMTVLength = 0;
+		int count = firstVertices.size() + secondVertices.size();
 
- /*разобраться с синтаксисом java.
- @Override
-  public String toString()
-  {
-    return String.format("{Mtv:%s, Length:%f}", mtv == null ? "<null>" : mtv.toString(), mtvLength);
-  }
-*/
+		for (int i = 0; i < count; i++)
+		{
+			setNormal(normal, firstVertices, secondVertices, i);
 
-  private static class CheckResult
-  {
-    private final Vector2 mtv;
-    private final float mtvLength;
+			Vector2 *firstProjection = normal->getProjection(firstVertices);
+			Vector2 *secondProjection = normal->getProjection(secondVertices);
 
-    public CheckResult(Vector2 mtv, float mtvLength)
-    {
-      this.mtv = mtv;
-      this.mtvLength = mtvLength;
-    }
-  }
+			if (firstProjection->getX() < secondProjection->getY() || secondProjection->getX() < firstProjection->getY())
+			{
+				return nullptr;
+			}
+
+			if (mtv == nullptr)
+			{
+				mtv = Vector2::getInstance(normal);
+				minMTVLength = getIntersectionLength(firstProjection, secondProjection);
+			}
+			else
+			{
+				float mtvLength = getIntersectionLength(firstProjection, secondProjection);
+				if (std::abs(mtvLength) < std::abs(minMTVLength))
+				{
+					mtv->setFrom(normal);
+					minMTVLength = mtvLength;
+				}
+			}
+		}
+
+		return new CheckResult(mtv, minMTVLength);
+}
+
+float Collision2D::getIntersectionLength(Vector2 *firstProjection, Vector2 *secondProjection)
+{
+		return (secondProjection->getY() - firstProjection->getX() > 0) ? secondProjection->getY() - firstProjection->getX() : firstProjection->getY() - secondProjection->getX();
+}
+
+void Collision2D::setNormal(Vector2 *normal, std::array_Renamed<Vector2*> &firstVertices, std::array_Renamed<Vector2*> &secondVertices, int num)
+{
+		if (num < firstVertices.size())
+		{
+			setNormal(normal, firstVertices, num);
+		}
+		else
+		{
+			num -= firstVertices.size();
+			setNormal(normal, secondVertices, num);
+		}
+}
+
+void Collision2D::setNormal(Vector2 *normal, std::vector<Vector2*> &vertices, int num)
+{
+		Vector2 *firstPoint = vertices[num];
+		Vector2 *secondPoint = vertices[num + 1 == vertices.size() ? 0 : num + 1];
+
+		Vector2 *edge = secondPoint->getSubtract(firstPoint);
+
+		normal->setX(-edge->getY());
+		normal->setY(edge->getX());
+
+		normal->normalize();
+}
+
+Vector2 *Collision2D::getMTV()
+{
+		return Vector2::getInstance(mtv);
+}
+
+float Collision2D::getMTVLength()
+{
+		return mtvLength;
+}
+
+bool_Renamed *Collision2D::isCollide()
+{
+		return collide;
+}
+
+std::wstring Collision2D::toString()
+{
+//TODO TASK: There is no native C++ equivalent to 'toString':
+   return std::wstring::format(L"{Mtv:%s, Length:%f}", mtv == nullptr ? L"<null>" : mtv->toString(), mtvLength);
+}
+
+Collision2D::CheckResult::CheckResult(Vector2 *mtv, float mtvLength) : mtv(mtv), mtvLength(mtvLength)
+{
 }
 
 #ifndef MIPT_APP_SIMPLE_PHYSICS_H
