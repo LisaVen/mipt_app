@@ -48,7 +48,7 @@ class CheckResult;
 class Collision2D
 {
 private:
-Vector2 *mtv;
+Vector *mtv;
 float mtvLength = 0;
 bool_Renamed *collide;
 
@@ -71,7 +71,7 @@ static void setNormal(Vector2 *normal, std::array_Renamed<Vector2*> &firstVertic
 static void setNormal(Vector2 *normal, std::vector<Vector2*> &vertices, int num);
 
 public:
-virtual Vector2 *getMTV();
+virtual Vector *getMTV();
 
 virtual float getMTVLength();
 
@@ -83,7 +83,7 @@ private:
 class CheckResult
 {
 private:
-	Vector2 *const mtv;
+	Vector *const mtv;
 	const float mtvLength;
 
 public:
@@ -92,13 +92,13 @@ public:
 		delete mtv;
 	}
 
-	CheckResult(Vector2 *mtv, float mtvLength);
+	CheckResult(Vector *mtv, float mtvLength);
 };
 };
 
 //.cpp file:
 
-Collision2D::Collision2D(std::array_Renamed<Vector2*> &first, std:: array_Renamed)
+Collision2D::Collision2D(std::array_Renamed<Vector*> &first, std:: array_Renamed)
 {
 		CheckResult *result = check(first, second);
 
@@ -113,10 +113,10 @@ Collision2D::Collision2D(std::array_Renamed<Vector2*> &first, std:: array_Rename
 		mtvLength = abs(result->mtvLength);
 }
 
-Collision2D::CheckResult *Collision2D::check(std::array_Renamed<Vector2*> &firstVertices, std::array_Renamed<Vector2*> &secondVertices)
+Collision2D::CheckResult *Collision2D::check(std::array_Renamed<Vector*> &firstVertices, std::array_Renamed<Vector*> &secondVertices)
 {
-		Vector2 *mtv = nullptr;
-		Vector2 *normal = Vector2::getInstance();
+		Vector *mtv = nullptr;
+		Vector *normal = Vector::getInstance();
 		float minMTVLength = 0;
 		int count = firstVertices.size() + secondVertices.size();
 
@@ -124,8 +124,8 @@ Collision2D::CheckResult *Collision2D::check(std::array_Renamed<Vector2*> &first
 		{
 			setNormal(normal, firstVertices, secondVertices, i);
 
-			Vector2 *firstProjection = normal->getProjection(firstVertices);
-			Vector2 *secondProjection = normal->getProjection(secondVertices);
+			Vector *firstProjection = normal->getProjection(firstVertices);
+			Vector *secondProjection = normal->getProjection(secondVertices);
 
 			if (firstProjection->getX() < secondProjection->getY() || secondProjection->getX() < firstProjection->getY())
 			{
@@ -134,7 +134,7 @@ Collision2D::CheckResult *Collision2D::check(std::array_Renamed<Vector2*> &first
 
 			if (mtv == nullptr)
 			{
-				mtv = Vector2::getInstance(normal);
+				mtv = Vector::getInstance(normal);
 				minMTVLength = getIntersectionLength(firstProjection, secondProjection);
 			}
 			else
@@ -151,12 +151,12 @@ Collision2D::CheckResult *Collision2D::check(std::array_Renamed<Vector2*> &first
 		return new CheckResult(mtv, minMTVLength);
 }
 
-float Collision2D::getIntersectionLength(Vector2 *firstProjection, Vector2 *secondProjection)
+float Collision2D::getIntersectionLength(Vector *firstProjection, Vector *secondProjection)
 {
 		return (secondProjection->getY() - firstProjection->getX() > 0) ? secondProjection->getY() - firstProjection->getX() : firstProjection->getY() - secondProjection->getX();
 }
 
-void Collision2D::setNormal(Vector2 *normal, std::array_Renamed<Vector2*> &firstVertices, std::array_Renamed<Vector2*> &secondVertices, int num)
+void Collision2D::setNormal(Vector *normal, std::array_Renamed<Vector*> &firstVertices, std::array_Renamed<Vector*> &secondVertices, int num)
 {
 		if (num < firstVertices.size())
 		{
@@ -169,12 +169,12 @@ void Collision2D::setNormal(Vector2 *normal, std::array_Renamed<Vector2*> &first
 		}
 }
 
-void Collision2D::setNormal(Vector2 *normal, std::vector<Vector2*> &vertices, int num)
+void Collision2D::setNormal(Vector *normal, std::vector<Vector*> &vertices, int num)
 {
-		Vector2 *firstPoint = vertices[num];
-		Vector2 *secondPoint = vertices[num + 1 == vertices.size() ? 0 : num + 1];
+		Vector *firstPoint = vertices[num];
+		Vector *secondPoint = vertices[num + 1 == vertices.size() ? 0 : num + 1];
 
-		Vector2 *edge = secondPoint->getSubtract(firstPoint);
+		Vector *edge = secondPoint->getSubtract(firstPoint);
 
 		normal->setX(-edge->getY());
 		normal->setY(edge->getX());
@@ -182,9 +182,9 @@ void Collision2D::setNormal(Vector2 *normal, std::vector<Vector2*> &vertices, in
 		normal->normalize();
 }
 
-Vector2 *Collision2D::getMTV()
+Vector *Collision2D::getMTV()
 {
-		return Vector2::getInstance(mtv);
+		return Vector::getInstance(mtv);
 }
 
 float Collision2D::getMTVLength()
